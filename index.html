@@ -91,6 +91,7 @@
 
   .mode-row{
     display:flex;
+    flex-direction:column;
     gap:8px;
     margin-bottom:16px;
   }
@@ -205,9 +206,6 @@
 
   /* Responsivo - ecrãs estreitos (telemóveis) */
   @media (max-width: 480px) {
-    .mode-row{
-      flex-direction:column;
-    }
     h1{ font-size:1.5rem; }
     #micBtn{
       width:80px;
@@ -237,6 +235,7 @@
   <div class="mode-row">
     <button class="mode-btn active" data-mode="single" data-i18n="modeSingle">🎯 Tradução única</button>
     <button class="mode-btn" data-mode="conversation" data-i18n="modeConversation">💬 Modo Conversa</button>
+    <button class="mode-btn" data-mode="auto" data-i18n="modeAuto">🧠 Auto (mesmo par)</button>
   </div>
 
   <div class="box">
@@ -298,6 +297,9 @@ const uiTranslations = {
     swapTitle: 'Trocar idiomas',
     modeSingle: '🎯 Tradução única',
     modeConversation: '💬 Modo Conversa',
+    modeAuto: '🧠 Auto (mesmo par)',
+    statusAutoActive: 'Modo Auto ativo — fala em qualquer um dos dois idiomas',
+    statusAutoDetected: 'Idioma detetado',
     placeholderOriginal: 'Toca no microfone e fala...',
     placeholderTranslated: 'A tradução aparece aqui',
     statusReady: 'Pronto',
@@ -324,6 +326,9 @@ const uiTranslations = {
     swapTitle: 'Sprachen tauschen',
     modeSingle: '🎯 Einzelübersetzung',
     modeConversation: '💬 Gesprächsmodus',
+    modeAuto: '🧠 Auto (gleiches Paar)',
+    statusAutoActive: 'Auto-Modus aktiv — sprechen Sie in einer der beiden Sprachen',
+    statusAutoDetected: 'Sprache erkannt',
     placeholderOriginal: 'Mikrofon berühren und sprechen...',
     placeholderTranslated: 'Die Übersetzung erscheint hier',
     statusReady: 'Bereit',
@@ -350,6 +355,9 @@ const uiTranslations = {
     swapTitle: 'Intercambiar idiomas',
     modeSingle: '🎯 Traducción única',
     modeConversation: '💬 Modo Conversación',
+    modeAuto: '🧠 Auto (mismo par)',
+    statusAutoActive: 'Modo Auto activo — habla en cualquiera de los dos idiomas',
+    statusAutoDetected: 'Idioma detectado',
     placeholderOriginal: 'Toca el micrófono y habla...',
     placeholderTranslated: 'La traducción aparece aquí',
     statusReady: 'Listo',
@@ -376,6 +384,9 @@ const uiTranslations = {
     swapTitle: 'Échanger les langues',
     modeSingle: '🎯 Traduction unique',
     modeConversation: '💬 Mode Conversation',
+    modeAuto: '🧠 Auto (même paire)',
+    statusAutoActive: 'Mode Auto actif — parlez dans l\u2019une des deux langues',
+    statusAutoDetected: 'Langue détectée',
     placeholderOriginal: 'Touchez le micro et parlez...',
     placeholderTranslated: 'La traduction apparaît ici',
     statusReady: 'Prêt',
@@ -402,6 +413,9 @@ const uiTranslations = {
     swapTitle: 'Swap languages',
     modeSingle: '🎯 Single Translation',
     modeConversation: '💬 Conversation Mode',
+    modeAuto: '🧠 Auto (same pair)',
+    statusAutoActive: 'Auto Mode active — speak in either language',
+    statusAutoDetected: 'Language detected',
     placeholderOriginal: 'Tap the microphone and speak...',
     placeholderTranslated: 'Translation appears here',
     statusReady: 'Ready',
@@ -490,8 +504,9 @@ const modeButtons = document.querySelectorAll('.mode-btn');
 const convNote = document.getElementById('convNote');
 const compatWarning = document.getElementById('compatWarning');
 
-let mode = 'single'; // 'single' or 'conversation'
+let mode = 'single'; // 'single', 'conversation' ou 'auto'
 let conversationTurn = 'from'; // which side is currently speaking in conversation mode
+let autoAssumedLang = null; // idioma assumido para a próxima gravação no modo Auto
 let isListening = false;
 let lastTranslatedText = '';
 let lastTranslatedLang = 'pt-PT';
@@ -527,10 +542,12 @@ langFromSel.addEventListener('change', () => {
   if (mode === 'conversation') {
     conversationTurn = 'from';
   }
+  autoAssumedLang = null;
 });
 langToSel.addEventListener('change', () => {
   refreshLangSelects('to');
   updateLabels();
+  autoAssumedLang = null;
 });
 
 swapBtn.addEventListener('click', () => {
@@ -543,6 +560,7 @@ swapBtn.addEventListener('click', () => {
   if (mode === 'conversation') {
     conversationTurn = 'from';
   }
+  autoAssumedLang = null;
 });
 
 modeButtons.forEach(btn => {
@@ -552,10 +570,15 @@ modeButtons.forEach(btn => {
     mode = btn.dataset.mode;
     convNote.style.display = (mode === 'conversation') ? 'block' : 'none';
     conversationTurn = 'from';
+    autoAssumedLang = null;
     const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
-    statusEl.textContent = mode === 'conversation'
-      ? t.statusConvActive + ' ' + langNames[langFromSel.value]
-      : t.statusReady;
+    if (mode === 'conversation') {
+      statusEl.textContent = t.statusConvActive + ' ' + langNames[langFromSel.value];
+    } else if (mode === 'auto') {
+      statusEl.textContent = t.statusAutoActive;
+    } else {
+      statusEl.textContent = t.statusReady;
+    }
   });
 });
 
@@ -601,6 +624,16 @@ async function translateWithMyMemory(text, fromCode, toCode) {
   throw new Error('Sem tradução disponível');
 }
 
+async function translateWithAutoDetect(text, targetCode) {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetCode}&dt=t&q=${encodeURIComponent(text)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Google indisponível');
+  const data = await res.json();
+  const translated = (data && data[0]) ? data[0].map(seg => seg[0]).join('') : '';
+  const detectedCode = data && data[2] ? data[2] : null;
+  return { translated, detectedCode };
+}
+
 async function translateText(text, fromCode, toCode) {
   try {
     return await translateWithGoogle(text, fromCode, toCode);
@@ -640,6 +673,39 @@ async function handleRecognitionResult(transcript, fromLangTag, toLangTag) {
   translatedTextEl.textContent = '...';
 
   try {
+    if (mode === 'auto') {
+      // Deteta automaticamente se o texto está no idioma "from" ou "to" do par,
+      // e traduz sempre para o idioma oposto ao que foi detetado.
+      const fromCode = langCode2[langFromSel.value];
+      const toCode = langCode2[langToSel.value];
+
+      // Primeira tentativa: traduzir assumindo destino = idioma "to"
+      const first = await translateWithAutoDetect(transcript, toCode);
+      let translated, actualToLangTag, actualFromLangTag;
+
+      if (first.detectedCode === toCode) {
+        // Afinal quem falou foi no idioma "to" -> traduzir para "from"
+        const second = await translateWithAutoDetect(transcript, fromCode);
+        translated = second.translated;
+        actualFromLangTag = langToSel.value;
+        actualToLangTag = langFromSel.value;
+      } else {
+        // Detetado como idioma "from" (ou algo próximo) -> usar tradução já obtida
+        translated = first.translated;
+        actualFromLangTag = langFromSel.value;
+        actualToLangTag = langToSel.value;
+      }
+
+      translatedTextEl.textContent = translated;
+      lastTranslatedText = translated;
+      lastTranslatedLang = actualToLangTag;
+      statusEl.textContent = t.statusSpeaking;
+      speak(translated, actualToLangTag);
+      autoAssumedLang = actualToLangTag; // assume que a próxima fala será a resposta, no idioma oposto
+      statusEl.textContent = t.statusAutoDetected + ': ' + langNames[actualFromLangTag] + ' → ' + langNames[actualToLangTag];
+      return;
+    }
+
     const fromCode = langCode2[fromLangTag];
     const toCode = langCode2[toLangTag];
     const translated = await translateText(transcript, fromCode, toCode);
@@ -670,6 +736,10 @@ function startListening() {
       fromLangTag = langToSel.value;
       toLangTag = langFromSel.value;
     }
+  } else if (mode === 'auto') {
+    // Usa o último idioma assumido (resposta esperada) ou o idioma "from" por defeito
+    fromLangTag = autoAssumedLang || langFromSel.value;
+    toLangTag = (fromLangTag === langFromSel.value) ? langToSel.value : langFromSel.value;
   } else {
     fromLangTag = langFromSel.value;
     toLangTag = langToSel.value;
