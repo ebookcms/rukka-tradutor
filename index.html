@@ -200,16 +200,44 @@
     font-size:0.85rem;
     text-align:center;
   }
+
+  /* Responsivo - ecrãs estreitos (telemóveis) */
+  @media (max-width: 480px) {
+    .lang-row{
+      flex-direction:column;
+      align-items:stretch;
+    }
+    .lang-row select{
+      width:100%;
+    }
+    .swap-btn{
+      align-self:center;
+      transform:rotate(90deg);
+      margin:2px 0;
+    }
+    .swap-btn:active{
+      transform:rotate(270deg);
+    }
+    .mode-row{
+      flex-direction:column;
+    }
+    h1{ font-size:1.5rem; }
+    #micBtn{
+      width:80px;
+      height:80px;
+      font-size:1.9rem;
+    }
+  }
 </style>
 </head>
 <body>
 
-<h1>🌍 Rukka Tradutor</h1>
-<div class="subtitle">Fala num idioma, ouve na tradução — em tempo real</div>
+<h1 data-i18n="title">🌍 Rukka Tradutor</h1>
+<div class="subtitle" data-i18n="subtitle">Fala num idioma, ouve na tradução — em tempo real</div>
 
 <div class="container">
 
-  <div id="compatWarning" class="warning" style="display:none;">
+  <div id="compatWarning" class="warning" style="display:none;" data-i18n="compatWarning">
     ⚠️ O seu navegador não suporta reconhecimento de voz. Use o Google Chrome (PC ou Android).
   </div>
 
@@ -221,7 +249,7 @@
       <option value="fr-FR">🇫🇷 Francês (França)</option>
       <option value="en-US">🇬🇧 Inglês</option>
     </select>
-    <button class="swap-btn" id="swapBtn" title="Trocar idiomas">⇄</button>
+    <button class="swap-btn" id="swapBtn" title="Trocar idiomas" data-i18n-title="swapTitle">⇄</button>
     <select id="langTo">
       <option value="de-DE">🇩🇪 Alemão (Alemanha)</option>
       <option value="pt-PT">🇵🇹 Português (Portugal)</option>
@@ -232,43 +260,43 @@
   </div>
 
   <div class="mode-row">
-    <button class="mode-btn active" data-mode="single">🎯 Tradução única</button>
-    <button class="mode-btn" data-mode="conversation">💬 Modo Conversa</button>
+    <button class="mode-btn active" data-mode="single" data-i18n="modeSingle">🎯 Tradução única</button>
+    <button class="mode-btn" data-mode="conversation" data-i18n="modeConversation">💬 Modo Conversa</button>
   </div>
 
   <div class="box">
     <div class="box-label" id="fromLabel">Original</div>
-    <div id="originalText">Toca no microfone e fala...</div>
+    <div id="originalText" data-i18n="placeholderOriginal">Toca no microfone e fala...</div>
   </div>
 
   <div class="box">
     <div class="box-label" id="toLabel">Tradução</div>
-    <div id="translatedText">A tradução aparece aqui</div>
+    <div id="translatedText" data-i18n="placeholderTranslated">A tradução aparece aqui</div>
   </div>
 
-  <div class="status" id="status">Pronto</div>
+  <div class="status" id="status" data-i18n="statusReady">Pronto</div>
 
   <div class="controls">
     <button id="micBtn">🎤</button>
   </div>
 
-  <div class="conv-mode-note" id="convNote" style="display:none;">
+  <div class="conv-mode-note" id="convNote" style="display:none;" data-i18n="convNote">
     No Modo Conversa, cada gravação alterna automaticamente entre os dois idiomas.
   </div>
 
   <div class="footer-row">
-    <button class="small-btn" id="replayBtn">🔊 Repetir áudio</button>
-    <button class="small-btn" id="clearBtn">🗑️ Limpar</button>
+    <button class="small-btn" id="replayBtn" data-i18n="replayBtn">🔊 Repetir áudio</button>
+    <button class="small-btn" id="clearBtn" data-i18n="clearBtn">🗑️ Limpar</button>
   </div>
 
   <div style="margin-top:14px;">
-    <div class="box-label">Velocidade da voz: <span id="rateValue">0.95</span>x</div>
+    <div class="box-label"><span data-i18n="speedLabel">Velocidade da voz:</span> <span id="rateValue">0.95</span>x</div>
     <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.05" value="0.95" style="width:100%;">
   </div>
 
 </div>
 
-<footer>Rukka Tradutor · Reconhecimento e síntese de voz nativos do navegador · Tradução via Google Translate (com reserva MyMemory)</footer>
+<footer data-i18n="footerText">Rukka Tradutor · Reconhecimento e síntese de voz nativos do navegador · Tradução via Google Translate (com reserva MyMemory)</footer>
 
 <script>
 const langNames = {
@@ -286,6 +314,156 @@ const langCode2 = {
   'fr-FR': 'fr',
   'en-US': 'en'
 };
+
+const uiTranslations = {
+  'pt': {
+    title: '🌍 Rukka Tradutor',
+    subtitle: 'Fala num idioma, ouve na tradução — em tempo real',
+    compatWarning: '⚠️ O seu navegador não suporta reconhecimento de voz. Use o Google Chrome (PC ou Android).',
+    swapTitle: 'Trocar idiomas',
+    modeSingle: '🎯 Tradução única',
+    modeConversation: '💬 Modo Conversa',
+    placeholderOriginal: 'Toca no microfone e fala...',
+    placeholderTranslated: 'A tradução aparece aqui',
+    statusReady: 'Pronto',
+    convNote: 'No Modo Conversa, cada gravação alterna automaticamente entre os dois idiomas.',
+    replayBtn: '🔊 Repetir áudio',
+    clearBtn: '🗑️ Limpar',
+    speedLabel: 'Velocidade da voz:',
+    footerText: 'Rukka Tradutor · Reconhecimento e síntese de voz nativos do navegador · Tradução via Google Translate (com reserva MyMemory)',
+    labelOriginal: 'Original',
+    labelTranslated: 'Tradução',
+    statusListening: 'A ouvir em',
+    statusTranslating: 'A traduzir...',
+    statusSpeaking: 'A falar tradução...',
+    statusDone: 'Concluído',
+    statusError: 'Erro na tradução. Tenta novamente.',
+    statusMicError: 'Não foi possível iniciar o microfone.',
+    statusConvActive: 'Modo Conversa ativo — toca para falar em',
+    statusNextTurn: 'Toca para a próxima resposta'
+  },
+  'de': {
+    title: '🌍 Rukka Übersetzer',
+    subtitle: 'Sprich in einer Sprache, höre die Übersetzung — in Echtzeit',
+    compatWarning: '⚠️ Ihr Browser unterstützt keine Spracherkennung. Bitte Google Chrome verwenden (PC oder Android).',
+    swapTitle: 'Sprachen tauschen',
+    modeSingle: '🎯 Einzelübersetzung',
+    modeConversation: '💬 Gesprächsmodus',
+    placeholderOriginal: 'Mikrofon berühren und sprechen...',
+    placeholderTranslated: 'Die Übersetzung erscheint hier',
+    statusReady: 'Bereit',
+    convNote: 'Im Gesprächsmodus wechselt jede Aufnahme automatisch zwischen den beiden Sprachen.',
+    replayBtn: '🔊 Audio wiederholen',
+    clearBtn: '🗑️ Löschen',
+    speedLabel: 'Sprechgeschwindigkeit:',
+    footerText: 'Rukka Übersetzer · Native Spracherkennung und -synthese des Browsers · Übersetzung via Google Translate (mit MyMemory als Reserve)',
+    labelOriginal: 'Original',
+    labelTranslated: 'Übersetzung',
+    statusListening: 'Höre auf',
+    statusTranslating: 'Übersetze...',
+    statusSpeaking: 'Spreche Übersetzung...',
+    statusDone: 'Fertig',
+    statusError: 'Übersetzungsfehler. Bitte erneut versuchen.',
+    statusMicError: 'Mikrofon konnte nicht gestartet werden.',
+    statusConvActive: 'Gesprächsmodus aktiv — berühren, um zu sprechen in',
+    statusNextTurn: 'Berühren für die nächste Antwort'
+  },
+  'es': {
+    title: '🌍 Rukka Traductor',
+    subtitle: 'Habla en un idioma, escucha la traducción — en tiempo real',
+    compatWarning: '⚠️ Su navegador no soporta reconocimiento de voz. Use Google Chrome (PC o Android).',
+    swapTitle: 'Intercambiar idiomas',
+    modeSingle: '🎯 Traducción única',
+    modeConversation: '💬 Modo Conversación',
+    placeholderOriginal: 'Toca el micrófono y habla...',
+    placeholderTranslated: 'La traducción aparece aquí',
+    statusReady: 'Listo',
+    convNote: 'En el Modo Conversación, cada grabación alterna automáticamente entre los dos idiomas.',
+    replayBtn: '🔊 Repetir audio',
+    clearBtn: '🗑️ Limpiar',
+    speedLabel: 'Velocidad de voz:',
+    footerText: 'Rukka Traductor · Reconocimiento y síntesis de voz nativos del navegador · Traducción vía Google Translate (con reserva MyMemory)',
+    labelOriginal: 'Original',
+    labelTranslated: 'Traducción',
+    statusListening: 'Escuchando en',
+    statusTranslating: 'Traduciendo...',
+    statusSpeaking: 'Hablando traducción...',
+    statusDone: 'Completado',
+    statusError: 'Error de traducción. Inténtalo de nuevo.',
+    statusMicError: 'No se pudo iniciar el micrófono.',
+    statusConvActive: 'Modo Conversación activo — toca para hablar en',
+    statusNextTurn: 'Toca para la siguiente respuesta'
+  },
+  'fr': {
+    title: '🌍 Rukka Traducteur',
+    subtitle: 'Parlez dans une langue, écoutez la traduction — en temps réel',
+    compatWarning: '⚠️ Votre navigateur ne prend pas en charge la reconnaissance vocale. Utilisez Google Chrome (PC ou Android).',
+    swapTitle: 'Échanger les langues',
+    modeSingle: '🎯 Traduction unique',
+    modeConversation: '💬 Mode Conversation',
+    placeholderOriginal: 'Touchez le micro et parlez...',
+    placeholderTranslated: 'La traduction apparaît ici',
+    statusReady: 'Prêt',
+    convNote: 'En Mode Conversation, chaque enregistrement alterne automatiquement entre les deux langues.',
+    replayBtn: '🔊 Répéter l\\'audio',
+    clearBtn: '🗑️ Effacer',
+    speedLabel: 'Vitesse de la voix :',
+    footerText: 'Rukka Traducteur · Reconnaissance et synthèse vocale natives du navigateur · Traduction via Google Translate (avec MyMemory en réserve)',
+    labelOriginal: 'Original',
+    labelTranslated: 'Traduction',
+    statusListening: 'Écoute en',
+    statusTranslating: 'Traduction en cours...',
+    statusSpeaking: 'Lecture de la traduction...',
+    statusDone: 'Terminé',
+    statusError: 'Erreur de traduction. Réessayez.',
+    statusMicError: 'Impossible de démarrer le microphone.',
+    statusConvActive: 'Mode Conversation actif — touchez pour parler en',
+    statusNextTurn: 'Touchez pour la réponse suivante'
+  },
+  'en': {
+    title: '🌍 Rukka Translator',
+    subtitle: 'Speak in one language, hear the translation — in real time',
+    compatWarning: '⚠️ Your browser does not support speech recognition. Please use Google Chrome (PC or Android).',
+    swapTitle: 'Swap languages',
+    modeSingle: '🎯 Single Translation',
+    modeConversation: '💬 Conversation Mode',
+    placeholderOriginal: 'Tap the microphone and speak...',
+    placeholderTranslated: 'Translation appears here',
+    statusReady: 'Ready',
+    convNote: 'In Conversation Mode, each recording automatically alternates between the two languages.',
+    replayBtn: '🔊 Replay audio',
+    clearBtn: '🗑️ Clear',
+    speedLabel: 'Voice speed:',
+    footerText: 'Rukka Translator · Native browser speech recognition and synthesis · Translation via Google Translate (with MyMemory fallback)',
+    labelOriginal: 'Original',
+    labelTranslated: 'Translation',
+    statusListening: 'Listening in',
+    statusTranslating: 'Translating...',
+    statusSpeaking: 'Speaking translation...',
+    statusDone: 'Done',
+    statusError: 'Translation error. Please try again.',
+    statusMicError: 'Could not start the microphone.',
+    statusConvActive: 'Conversation Mode active — tap to speak in',
+    statusNextTurn: 'Tap for the next reply'
+  }
+};
+
+function getCurrentUiLang() {
+  return langCode2[langFromSel.value] || 'pt';
+}
+
+function applyUiTranslations() {
+  const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (t[key]) el.title = t[key];
+  });
+  document.title = t.title.replace(/^[^\w]+/, '').trim();
+}
 
 const langFromSel = document.getElementById('langFrom');
 const langToSel = document.getElementById('langTo');
@@ -322,12 +500,20 @@ if (!SpeechRecognition) {
 }
 
 function updateLabels() {
-  fromLabel.textContent = 'Original — ' + langNames[langFromSel.value];
-  toLabel.textContent = 'Tradução — ' + langNames[langToSel.value];
+  const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
+  fromLabel.textContent = t.labelOriginal + ' — ' + langNames[langFromSel.value];
+  toLabel.textContent = t.labelTranslated + ' — ' + langNames[langToSel.value];
 }
 updateLabels();
+applyUiTranslations();
 
-langFromSel.addEventListener('change', updateLabels);
+langFromSel.addEventListener('change', () => {
+  updateLabels();
+  applyUiTranslations();
+  if (mode === 'conversation') {
+    conversationTurn = 'from';
+  }
+});
 langToSel.addEventListener('change', updateLabels);
 
 swapBtn.addEventListener('click', () => {
@@ -344,16 +530,18 @@ modeButtons.forEach(btn => {
     mode = btn.dataset.mode;
     convNote.style.display = (mode === 'conversation') ? 'block' : 'none';
     conversationTurn = 'from';
+    const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
     statusEl.textContent = mode === 'conversation'
-      ? 'Modo Conversa ativo — toca para falar em ' + langNames[langFromSel.value]
-      : 'Pronto';
+      ? t.statusConvActive + ' ' + langNames[langFromSel.value]
+      : t.statusReady;
   });
 });
 
 clearBtn.addEventListener('click', () => {
-  originalTextEl.textContent = 'Toca no microfone e fala...';
-  translatedTextEl.textContent = 'A tradução aparece aqui';
-  statusEl.textContent = 'Pronto';
+  const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
+  originalTextEl.textContent = t.placeholderOriginal;
+  translatedTextEl.textContent = t.placeholderTranslated;
+  statusEl.textContent = t.statusReady;
 });
 
 replayBtn.addEventListener('click', () => {
@@ -424,8 +612,9 @@ function speak(text, langTag) {
 }
 
 async function handleRecognitionResult(transcript, fromLangTag, toLangTag) {
+  const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
   originalTextEl.textContent = transcript;
-  statusEl.textContent = 'A traduzir...';
+  statusEl.textContent = t.statusTranslating;
   translatedTextEl.textContent = '...';
 
   try {
@@ -435,19 +624,20 @@ async function handleRecognitionResult(transcript, fromLangTag, toLangTag) {
     translatedTextEl.textContent = translated;
     lastTranslatedText = translated;
     lastTranslatedLang = toLangTag;
-    statusEl.textContent = 'A falar tradução...';
+    statusEl.textContent = t.statusSpeaking;
     speak(translated, toLangTag);
     statusEl.textContent = mode === 'conversation'
-      ? 'Toca para a próxima resposta (' + langNames[conversationTurn === 'from' ? langFromSel.value : langToSel.value] + ')'
-      : 'Concluído';
+      ? t.statusNextTurn + ' (' + langNames[conversationTurn === 'from' ? langFromSel.value : langToSel.value] + ')'
+      : t.statusDone;
   } catch (err) {
-    statusEl.textContent = 'Erro na tradução. Tenta novamente.';
+    statusEl.textContent = t.statusError;
     translatedTextEl.textContent = '⚠️ ' + err.message;
   }
 }
 
 function startListening() {
   if (!recognition) return;
+  const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
 
   let fromLangTag, toLangTag;
   if (mode === 'conversation') {
@@ -465,7 +655,7 @@ function startListening() {
 
   recognition.lang = fromLangTag;
   setListeningUI(true);
-  statusEl.textContent = 'A ouvir em ' + langNames[fromLangTag] + '...';
+  statusEl.textContent = t.statusListening + ' ' + langNames[fromLangTag] + '...';
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
@@ -487,7 +677,7 @@ function startListening() {
   try {
     recognition.start();
   } catch (e) {
-    statusEl.textContent = 'Não foi possível iniciar o microfone.';
+    statusEl.textContent = t.statusMicError;
     setListeningUI(false);
   }
 }
@@ -515,4 +705,3 @@ if (window.speechSynthesis) {
 
 </body>
 </html>
-
