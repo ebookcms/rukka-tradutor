@@ -271,11 +271,6 @@
     <select id="langTo"></select>
   </div>
 
-  <div class="mode-row">
-    <button class="mode-btn active" data-mode="single" data-i18n="modeSingle">🎯 Tradução única</button>
-    <button class="mode-btn" data-mode="conversation" data-i18n="modeConversation">💬 Modo Conversa</button>
-  </div>
-
   <div class="box">
     <div class="box-label" id="fromLabel">Original</div>
     <div id="originalText" data-i18n="placeholderOriginal">Toca no microfone e fala...</div>
@@ -288,11 +283,7 @@
 
   <div class="status" id="status" data-i18n="statusReady">Pronto</div>
 
-  <div class="controls" id="singleControls">
-    <button id="micBtn">🎤</button>
-  </div>
-
-  <div class="controls conv-controls" id="convControls" style="display:none;">
+  <div class="controls conv-controls" id="convControls">
     <div class="conv-mic-group">
       <button class="conv-mic-btn" id="micBtnFrom">🎤</button>
       <div class="conv-mic-label" id="micFromLabel"></div>
@@ -303,8 +294,8 @@
     </div>
   </div>
 
-  <div class="conv-mode-note" id="convNote" style="display:none;" data-i18n="convNote">
-    No Modo Conversa, toca no microfone correspondente ao idioma que vais falar.
+  <div class="conv-mode-note" id="convNote" data-i18n="convNote">
+    Toca no microfone correspondente ao idioma que vais falar.
   </div>
 
   <div class="footer-row">
@@ -526,8 +517,6 @@ function refreshLangSelects(changedFrom) {
 const langFromSel = document.getElementById('langFrom');
 const langToSel = document.getElementById('langTo');
 const swapBtn = document.getElementById('swapBtn');
-const micBtn = document.getElementById('micBtn');
-const singleControls = document.getElementById('singleControls');
 const convControls = document.getElementById('convControls');
 const micBtnFrom = document.getElementById('micBtnFrom');
 const micBtnTo = document.getElementById('micBtnTo');
@@ -540,13 +529,11 @@ const fromLabel = document.getElementById('fromLabel');
 const toLabel = document.getElementById('toLabel');
 const replayBtn = document.getElementById('replayBtn');
 const clearBtn = document.getElementById('clearBtn');
-const modeButtons = document.querySelectorAll('.mode-btn');
 const convNote = document.getElementById('convNote');
 const compatWarning = document.getElementById('compatWarning');
 
-let mode = 'single'; // 'single' or 'conversation'
 let isListening = false;
-let activeMicBtn = null; // which button is currently the "listening" one (single mode or conv mode)
+let activeMicBtn = null; // which mic button is currently listening
 let lastTranslatedText = '';
 let lastTranslatedLang = 'pt-PT';
 
@@ -555,7 +542,8 @@ let recognition = null;
 
 if (!SpeechRecognition) {
   compatWarning.style.display = 'block';
-  micBtn.disabled = true;
+  micBtnFrom.disabled = true;
+  micBtnTo.disabled = true;
 } else {
   recognition = new SpeechRecognition();
   recognition.continuous = false;
@@ -597,19 +585,6 @@ swapBtn.addEventListener('click', () => {
   applyUiTranslations();
 });
 
-modeButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    modeButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    mode = btn.dataset.mode;
-    convNote.style.display = (mode === 'conversation') ? 'block' : 'none';
-    singleControls.style.display = (mode === 'conversation') ? 'none' : 'flex';
-    convControls.style.display = (mode === 'conversation') ? 'flex' : 'none';
-    const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
-    statusEl.textContent = t.statusReady;
-  });
-});
-
 clearBtn.addEventListener('click', () => {
   const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
   originalTextEl.textContent = t.placeholderOriginal;
@@ -625,9 +600,9 @@ replayBtn.addEventListener('click', () => {
 
 function setListeningUI(active, btn) {
   isListening = active;
-  const target = btn || micBtn;
-  // Clear listening state from all mic buttons first
-  [micBtn, micBtnFrom, micBtnTo].forEach(b => {
+  const target = btn || micBtnFrom;
+  // Clear listening state from both mic buttons first
+  [micBtnFrom, micBtnTo].forEach(b => {
     if (b) {
       b.classList.remove('listening');
       b.textContent = '🎤';
@@ -762,14 +737,6 @@ function stopListening() {
   if (recognition) recognition.stop();
   setListeningUI(false);
 }
-
-micBtn.addEventListener('click', () => {
-  if (isListening) {
-    stopListening();
-  } else {
-    startListening('from', micBtn);
-  }
-});
 
 micBtnFrom.addEventListener('click', () => {
   if (isListening && activeMicBtn === micBtnFrom) {
