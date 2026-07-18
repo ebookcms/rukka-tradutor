@@ -1,0 +1,2 @@
+# rukka-tradutor
+Rukka Tradutor
