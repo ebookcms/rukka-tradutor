@@ -54,13 +54,13 @@
   }
   .lang-row{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:8px;
     margin-bottom:16px;
   }
   select{
-    flex:1;
+    width:100%;
     padding:10px;
     border-radius:10px;
     border:none;
@@ -74,6 +74,7 @@
     color:#fff;
   }
   .swap-btn{
+    align-self:center;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     border:none;
     border-radius:50%;
@@ -84,8 +85,9 @@
     color:#111;
     flex-shrink:0;
     transition:transform 0.2s;
+    transform:rotate(90deg);
   }
-  .swap-btn:active{transform:rotate(180deg);}
+  .swap-btn:active{transform:rotate(270deg);}
 
   .mode-row{
     display:flex;
@@ -203,21 +205,6 @@
 
   /* Responsivo - ecrãs estreitos (telemóveis) */
   @media (max-width: 480px) {
-    .lang-row{
-      flex-direction:column;
-      align-items:stretch;
-    }
-    .lang-row select{
-      width:100%;
-    }
-    .swap-btn{
-      align-self:center;
-      transform:rotate(90deg);
-      margin:2px 0;
-    }
-    .swap-btn:active{
-      transform:rotate(270deg);
-    }
     .mode-row{
       flex-direction:column;
     }
@@ -242,21 +229,9 @@
   </div>
 
   <div class="lang-row">
-    <select id="langFrom">
-      <option value="pt-PT">🇵🇹 Português (Portugal)</option>
-      <option value="de-DE">🇩🇪 Alemão (Alemanha)</option>
-      <option value="es-ES">🇪🇸 Espanhol (Espanha)</option>
-      <option value="fr-FR">🇫🇷 Francês (França)</option>
-      <option value="en-US">🇬🇧 Inglês</option>
-    </select>
+    <select id="langFrom"></select>
     <button class="swap-btn" id="swapBtn" title="Trocar idiomas" data-i18n-title="swapTitle">⇄</button>
-    <select id="langTo">
-      <option value="de-DE">🇩🇪 Alemão (Alemanha)</option>
-      <option value="pt-PT">🇵🇹 Português (Portugal)</option>
-      <option value="es-ES">🇪🇸 Espanhol (Espanha)</option>
-      <option value="fr-FR">🇫🇷 Francês (França)</option>
-      <option value="en-US">🇬🇧 Inglês</option>
-    </select>
+    <select id="langTo"></select>
   </div>
 
   <div class="mode-row">
@@ -405,7 +380,7 @@ const uiTranslations = {
     placeholderTranslated: 'La traduction apparaît ici',
     statusReady: 'Prêt',
     convNote: 'En Mode Conversation, chaque enregistrement alterne automatiquement entre les deux langues.',
-    replayBtn: '🔊 Répéter l\\'audio',
+    replayBtn: "🔊 Répéter l'audio",
     clearBtn: '🗑️ Effacer',
     speedLabel: 'Vitesse de la voix :',
     footerText: 'Rukka Traducteur · Reconnaissance et synthèse vocale natives du navigateur · Traduction via Google Translate (avec MyMemory en réserve)',
@@ -465,6 +440,41 @@ function applyUiTranslations() {
   document.title = t.title.replace(/^[^\w]+/, '').trim();
 }
 
+const allLanguages = [
+  { code: 'pt-PT', flag: '🇵🇹', name: 'Português (Portugal)' },
+  { code: 'de-DE', flag: '🇩🇪', name: 'Alemão (Alemanha)' },
+  { code: 'es-ES', flag: '🇪🇸', name: 'Espanhol (Espanha)' },
+  { code: 'fr-FR', flag: '🇫🇷', name: 'Francês (França)' },
+  { code: 'en-US', flag: '🇬🇧', name: 'Inglês' }
+];
+
+function populateSelect(selectEl, excludeCode, selectedCode) {
+  const prevValue = selectedCode || selectEl.value;
+  selectEl.innerHTML = '';
+  allLanguages.forEach(lang => {
+    if (lang.code === excludeCode) return;
+    const opt = document.createElement('option');
+    opt.value = lang.code;
+    opt.textContent = lang.flag + ' ' + lang.name;
+    selectEl.appendChild(opt);
+  });
+  // Mantém a seleção anterior se ainda for válida, senão escolhe a primeira disponível
+  const stillValid = Array.from(selectEl.options).some(o => o.value === prevValue);
+  selectEl.value = stillValid ? prevValue : selectEl.options[0].value;
+}
+
+function refreshLangSelects(changedFrom) {
+  if (changedFrom === 'from') {
+    populateSelect(langToSel, langFromSel.value, langToSel.value);
+  } else if (changedFrom === 'to') {
+    populateSelect(langFromSel, langToSel.value, langFromSel.value);
+  } else {
+    // inicialização
+    populateSelect(langFromSel, null, 'pt-PT');
+    populateSelect(langToSel, langFromSel.value, 'de-DE');
+  }
+}
+
 const langFromSel = document.getElementById('langFrom');
 const langToSel = document.getElementById('langTo');
 const swapBtn = document.getElementById('swapBtn');
@@ -504,23 +514,35 @@ function updateLabels() {
   fromLabel.textContent = t.labelOriginal + ' — ' + langNames[langFromSel.value];
   toLabel.textContent = t.labelTranslated + ' — ' + langNames[langToSel.value];
 }
+
+// Inicialização dos seletores de idioma
+refreshLangSelects();
 updateLabels();
 applyUiTranslations();
 
 langFromSel.addEventListener('change', () => {
+  refreshLangSelects('from');
   updateLabels();
   applyUiTranslations();
   if (mode === 'conversation') {
     conversationTurn = 'from';
   }
 });
-langToSel.addEventListener('change', updateLabels);
+langToSel.addEventListener('change', () => {
+  refreshLangSelects('to');
+  updateLabels();
+});
 
 swapBtn.addEventListener('click', () => {
-  const tmp = langFromSel.value;
-  langFromSel.value = langToSel.value;
-  langToSel.value = tmp;
+  const newFrom = langToSel.value;
+  const newTo = langFromSel.value;
+  populateSelect(langFromSel, newTo, newFrom);
+  populateSelect(langToSel, newFrom, newTo);
   updateLabels();
+  applyUiTranslations();
+  if (mode === 'conversation') {
+    conversationTurn = 'from';
+  }
 });
 
 modeButtons.forEach(btn => {
