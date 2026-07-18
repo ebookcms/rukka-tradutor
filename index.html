@@ -91,7 +91,6 @@
 
   .mode-row{
     display:flex;
-    flex-direction:column;
     gap:8px;
     margin-bottom:16px;
   }
@@ -154,6 +153,43 @@
     animation:pulse 1.2s infinite;
     background:radial-gradient(circle at 30% 30%, #ff4b4b, #b30000);
   }
+
+  .conv-controls{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:24px;
+  }
+  .conv-mic-group{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .conv-mic-btn{
+    width:74px;
+    height:74px;
+    border-radius:50%;
+    border:none;
+    background:radial-gradient(circle at 30% 30%, var(--accent), var(--accent2));
+    font-size:1.8rem;
+    cursor:pointer;
+    box-shadow:0 4px 20px rgba(255,123,84,0.5);
+    transition:transform 0.15s;
+    color:#111;
+  }
+  .conv-mic-btn:active{transform:scale(0.93);}
+  .conv-mic-btn.listening{
+    animation:pulse 1.2s infinite;
+    background:radial-gradient(circle at 30% 30%, #ff4b4b, #b30000);
+  }
+  .conv-mic-label{
+    font-size:0.75rem;
+    opacity:0.8;
+    text-align:center;
+    max-width:120px;
+    line-height:1.2;
+  }
   @keyframes pulse{
     0%{box-shadow:0 0 0 0 rgba(255,75,75,0.6);}
     70%{box-shadow:0 0 0 20px rgba(255,75,75,0);}
@@ -206,6 +242,9 @@
 
   /* Responsivo - ecrãs estreitos (telemóveis) */
   @media (max-width: 480px) {
+    .mode-row{
+      flex-direction:column;
+    }
     h1{ font-size:1.5rem; }
     #micBtn{
       width:80px;
@@ -235,7 +274,6 @@
   <div class="mode-row">
     <button class="mode-btn active" data-mode="single" data-i18n="modeSingle">🎯 Tradução única</button>
     <button class="mode-btn" data-mode="conversation" data-i18n="modeConversation">💬 Modo Conversa</button>
-    <button class="mode-btn" data-mode="auto" data-i18n="modeAuto">🧠 Auto (mesmo par)</button>
   </div>
 
   <div class="box">
@@ -250,12 +288,23 @@
 
   <div class="status" id="status" data-i18n="statusReady">Pronto</div>
 
-  <div class="controls">
+  <div class="controls" id="singleControls">
     <button id="micBtn">🎤</button>
   </div>
 
+  <div class="controls conv-controls" id="convControls" style="display:none;">
+    <div class="conv-mic-group">
+      <button class="conv-mic-btn" id="micBtnFrom">🎤</button>
+      <div class="conv-mic-label" id="micFromLabel"></div>
+    </div>
+    <div class="conv-mic-group">
+      <button class="conv-mic-btn" id="micBtnTo">🎤</button>
+      <div class="conv-mic-label" id="micToLabel"></div>
+    </div>
+  </div>
+
   <div class="conv-mode-note" id="convNote" style="display:none;" data-i18n="convNote">
-    No Modo Conversa, cada gravação alterna automaticamente entre os dois idiomas.
+    No Modo Conversa, toca no microfone correspondente ao idioma que vais falar.
   </div>
 
   <div class="footer-row">
@@ -297,13 +346,10 @@ const uiTranslations = {
     swapTitle: 'Trocar idiomas',
     modeSingle: '🎯 Tradução única',
     modeConversation: '💬 Modo Conversa',
-    modeAuto: '🧠 Auto (mesmo par)',
-    statusAutoActive: 'Modo Auto ativo — fala em qualquer um dos dois idiomas',
-    statusAutoDetected: 'Idioma detetado',
     placeholderOriginal: 'Toca no microfone e fala...',
     placeholderTranslated: 'A tradução aparece aqui',
     statusReady: 'Pronto',
-    convNote: 'No Modo Conversa, cada gravação alterna automaticamente entre os dois idiomas.',
+    convNote: 'No Modo Conversa, toca no microfone correspondente ao idioma que vais falar.',
     replayBtn: '🔊 Repetir áudio',
     clearBtn: '🗑️ Limpar',
     speedLabel: 'Velocidade da voz:',
@@ -326,13 +372,10 @@ const uiTranslations = {
     swapTitle: 'Sprachen tauschen',
     modeSingle: '🎯 Einzelübersetzung',
     modeConversation: '💬 Gesprächsmodus',
-    modeAuto: '🧠 Auto (gleiches Paar)',
-    statusAutoActive: 'Auto-Modus aktiv — sprechen Sie in einer der beiden Sprachen',
-    statusAutoDetected: 'Sprache erkannt',
     placeholderOriginal: 'Mikrofon berühren und sprechen...',
     placeholderTranslated: 'Die Übersetzung erscheint hier',
     statusReady: 'Bereit',
-    convNote: 'Im Gesprächsmodus wechselt jede Aufnahme automatisch zwischen den beiden Sprachen.',
+    convNote: 'Im Gesprächsmodus die Mikrofontaste für die Sprache berühren, die du sprechen willst.',
     replayBtn: '🔊 Audio wiederholen',
     clearBtn: '🗑️ Löschen',
     speedLabel: 'Sprechgeschwindigkeit:',
@@ -355,13 +398,10 @@ const uiTranslations = {
     swapTitle: 'Intercambiar idiomas',
     modeSingle: '🎯 Traducción única',
     modeConversation: '💬 Modo Conversación',
-    modeAuto: '🧠 Auto (mismo par)',
-    statusAutoActive: 'Modo Auto activo — habla en cualquiera de los dos idiomas',
-    statusAutoDetected: 'Idioma detectado',
     placeholderOriginal: 'Toca el micrófono y habla...',
     placeholderTranslated: 'La traducción aparece aquí',
     statusReady: 'Listo',
-    convNote: 'En el Modo Conversación, cada grabación alterna automáticamente entre los dos idiomas.',
+    convNote: 'En el Modo Conversación, toca el micrófono correspondiente al idioma que vas a hablar.',
     replayBtn: '🔊 Repetir audio',
     clearBtn: '🗑️ Limpiar',
     speedLabel: 'Velocidad de voz:',
@@ -384,13 +424,10 @@ const uiTranslations = {
     swapTitle: 'Échanger les langues',
     modeSingle: '🎯 Traduction unique',
     modeConversation: '💬 Mode Conversation',
-    modeAuto: '🧠 Auto (même paire)',
-    statusAutoActive: 'Mode Auto actif — parlez dans l\u2019une des deux langues',
-    statusAutoDetected: 'Langue détectée',
     placeholderOriginal: 'Touchez le micro et parlez...',
     placeholderTranslated: 'La traduction apparaît ici',
     statusReady: 'Prêt',
-    convNote: 'En Mode Conversation, chaque enregistrement alterne automatiquement entre les deux langues.',
+    convNote: 'En Mode Conversation, touchez le micro correspondant à la langue que vous allez parler.',
     replayBtn: "🔊 Répéter l'audio",
     clearBtn: '🗑️ Effacer',
     speedLabel: 'Vitesse de la voix :',
@@ -413,13 +450,10 @@ const uiTranslations = {
     swapTitle: 'Swap languages',
     modeSingle: '🎯 Single Translation',
     modeConversation: '💬 Conversation Mode',
-    modeAuto: '🧠 Auto (same pair)',
-    statusAutoActive: 'Auto Mode active — speak in either language',
-    statusAutoDetected: 'Language detected',
     placeholderOriginal: 'Tap the microphone and speak...',
     placeholderTranslated: 'Translation appears here',
     statusReady: 'Ready',
-    convNote: 'In Conversation Mode, each recording automatically alternates between the two languages.',
+    convNote: 'In Conversation Mode, tap the microphone for the language you are about to speak.',
     replayBtn: '🔊 Replay audio',
     clearBtn: '🗑️ Clear',
     speedLabel: 'Voice speed:',
@@ -493,6 +527,12 @@ const langFromSel = document.getElementById('langFrom');
 const langToSel = document.getElementById('langTo');
 const swapBtn = document.getElementById('swapBtn');
 const micBtn = document.getElementById('micBtn');
+const singleControls = document.getElementById('singleControls');
+const convControls = document.getElementById('convControls');
+const micBtnFrom = document.getElementById('micBtnFrom');
+const micBtnTo = document.getElementById('micBtnTo');
+const micFromLabel = document.getElementById('micFromLabel');
+const micToLabel = document.getElementById('micToLabel');
 const statusEl = document.getElementById('status');
 const originalTextEl = document.getElementById('originalText');
 const translatedTextEl = document.getElementById('translatedText');
@@ -504,10 +544,9 @@ const modeButtons = document.querySelectorAll('.mode-btn');
 const convNote = document.getElementById('convNote');
 const compatWarning = document.getElementById('compatWarning');
 
-let mode = 'single'; // 'single', 'conversation' ou 'auto'
-let conversationTurn = 'from'; // which side is currently speaking in conversation mode
-let autoAssumedLang = null; // idioma assumido para a próxima gravação no modo Auto
+let mode = 'single'; // 'single' or 'conversation'
 let isListening = false;
+let activeMicBtn = null; // which button is currently the "listening" one (single mode or conv mode)
 let lastTranslatedText = '';
 let lastTranslatedLang = 'pt-PT';
 
@@ -528,6 +567,10 @@ function updateLabels() {
   const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
   fromLabel.textContent = t.labelOriginal + ' — ' + langNames[langFromSel.value];
   toLabel.textContent = t.labelTranslated + ' — ' + langNames[langToSel.value];
+  if (micFromLabel && micToLabel) {
+    micFromLabel.textContent = langNames[langFromSel.value] + ' → ' + langNames[langToSel.value];
+    micToLabel.textContent = langNames[langToSel.value] + ' → ' + langNames[langFromSel.value];
+  }
 }
 
 // Inicialização dos seletores de idioma
@@ -539,15 +582,10 @@ langFromSel.addEventListener('change', () => {
   refreshLangSelects('from');
   updateLabels();
   applyUiTranslations();
-  if (mode === 'conversation') {
-    conversationTurn = 'from';
-  }
-  autoAssumedLang = null;
 });
 langToSel.addEventListener('change', () => {
   refreshLangSelects('to');
   updateLabels();
-  autoAssumedLang = null;
 });
 
 swapBtn.addEventListener('click', () => {
@@ -557,10 +595,6 @@ swapBtn.addEventListener('click', () => {
   populateSelect(langToSel, newFrom, newTo);
   updateLabels();
   applyUiTranslations();
-  if (mode === 'conversation') {
-    conversationTurn = 'from';
-  }
-  autoAssumedLang = null;
 });
 
 modeButtons.forEach(btn => {
@@ -569,16 +603,10 @@ modeButtons.forEach(btn => {
     btn.classList.add('active');
     mode = btn.dataset.mode;
     convNote.style.display = (mode === 'conversation') ? 'block' : 'none';
-    conversationTurn = 'from';
-    autoAssumedLang = null;
+    singleControls.style.display = (mode === 'conversation') ? 'none' : 'flex';
+    convControls.style.display = (mode === 'conversation') ? 'flex' : 'none';
     const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
-    if (mode === 'conversation') {
-      statusEl.textContent = t.statusConvActive + ' ' + langNames[langFromSel.value];
-    } else if (mode === 'auto') {
-      statusEl.textContent = t.statusAutoActive;
-    } else {
-      statusEl.textContent = t.statusReady;
-    }
+    statusEl.textContent = t.statusReady;
   });
 });
 
@@ -595,10 +623,23 @@ replayBtn.addEventListener('click', () => {
   }
 });
 
-function setListeningUI(active) {
+function setListeningUI(active, btn) {
   isListening = active;
-  micBtn.classList.toggle('listening', active);
-  micBtn.textContent = active ? '⏹️' : '🎤';
+  const target = btn || micBtn;
+  // Clear listening state from all mic buttons first
+  [micBtn, micBtnFrom, micBtnTo].forEach(b => {
+    if (b) {
+      b.classList.remove('listening');
+      b.textContent = '🎤';
+    }
+  });
+  if (active) {
+    target.classList.add('listening');
+    target.textContent = '⏹️';
+    activeMicBtn = target;
+  } else {
+    activeMicBtn = null;
+  }
 }
 
 async function translateWithGoogle(text, fromCode, toCode) {
@@ -622,16 +663,6 @@ async function translateWithMyMemory(text, fromCode, toCode) {
     return data.responseData.translatedText;
   }
   throw new Error('Sem tradução disponível');
-}
-
-async function translateWithAutoDetect(text, targetCode) {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetCode}&dt=t&q=${encodeURIComponent(text)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Google indisponível');
-  const data = await res.json();
-  const translated = (data && data[0]) ? data[0].map(seg => seg[0]).join('') : '';
-  const detectedCode = data && data[2] ? data[2] : null;
-  return { translated, detectedCode };
 }
 
 async function translateText(text, fromCode, toCode) {
@@ -673,39 +704,6 @@ async function handleRecognitionResult(transcript, fromLangTag, toLangTag) {
   translatedTextEl.textContent = '...';
 
   try {
-    if (mode === 'auto') {
-      // Deteta automaticamente se o texto está no idioma "from" ou "to" do par,
-      // e traduz sempre para o idioma oposto ao que foi detetado.
-      const fromCode = langCode2[langFromSel.value];
-      const toCode = langCode2[langToSel.value];
-
-      // Primeira tentativa: traduzir assumindo destino = idioma "to"
-      const first = await translateWithAutoDetect(transcript, toCode);
-      let translated, actualToLangTag, actualFromLangTag;
-
-      if (first.detectedCode === toCode) {
-        // Afinal quem falou foi no idioma "to" -> traduzir para "from"
-        const second = await translateWithAutoDetect(transcript, fromCode);
-        translated = second.translated;
-        actualFromLangTag = langToSel.value;
-        actualToLangTag = langFromSel.value;
-      } else {
-        // Detetado como idioma "from" (ou algo próximo) -> usar tradução já obtida
-        translated = first.translated;
-        actualFromLangTag = langFromSel.value;
-        actualToLangTag = langToSel.value;
-      }
-
-      translatedTextEl.textContent = translated;
-      lastTranslatedText = translated;
-      lastTranslatedLang = actualToLangTag;
-      statusEl.textContent = t.statusSpeaking;
-      speak(translated, actualToLangTag);
-      autoAssumedLang = actualToLangTag; // assume que a próxima fala será a resposta, no idioma oposto
-      statusEl.textContent = t.statusAutoDetected + ': ' + langNames[actualFromLangTag] + ' → ' + langNames[actualToLangTag];
-      return;
-    }
-
     const fromCode = langCode2[fromLangTag];
     const toCode = langCode2[toLangTag];
     const translated = await translateText(transcript, fromCode, toCode);
@@ -714,47 +712,33 @@ async function handleRecognitionResult(transcript, fromLangTag, toLangTag) {
     lastTranslatedLang = toLangTag;
     statusEl.textContent = t.statusSpeaking;
     speak(translated, toLangTag);
-    statusEl.textContent = mode === 'conversation'
-      ? t.statusNextTurn + ' (' + langNames[conversationTurn === 'from' ? langFromSel.value : langToSel.value] + ')'
-      : t.statusDone;
+    statusEl.textContent = t.statusDone;
   } catch (err) {
     statusEl.textContent = t.statusError;
     translatedTextEl.textContent = '⚠️ ' + err.message;
   }
 }
 
-function startListening() {
+function startListening(direction, btn) {
   if (!recognition) return;
   const t = uiTranslations[getCurrentUiLang()] || uiTranslations['pt'];
 
   let fromLangTag, toLangTag;
-  if (mode === 'conversation') {
-    if (conversationTurn === 'from') {
-      fromLangTag = langFromSel.value;
-      toLangTag = langToSel.value;
-    } else {
-      fromLangTag = langToSel.value;
-      toLangTag = langFromSel.value;
-    }
-  } else if (mode === 'auto') {
-    // Usa o último idioma assumido (resposta esperada) ou o idioma "from" por defeito
-    fromLangTag = autoAssumedLang || langFromSel.value;
-    toLangTag = (fromLangTag === langFromSel.value) ? langToSel.value : langFromSel.value;
+  if (direction === 'to') {
+    fromLangTag = langToSel.value;
+    toLangTag = langFromSel.value;
   } else {
     fromLangTag = langFromSel.value;
     toLangTag = langToSel.value;
   }
 
   recognition.lang = fromLangTag;
-  setListeningUI(true);
+  setListeningUI(true, btn);
   statusEl.textContent = t.statusListening + ' ' + langNames[fromLangTag] + '...';
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
     handleRecognitionResult(transcript, fromLangTag, toLangTag);
-    if (mode === 'conversation') {
-      conversationTurn = (conversationTurn === 'from') ? 'to' : 'from';
-    }
   };
 
   recognition.onerror = (event) => {
@@ -783,7 +767,23 @@ micBtn.addEventListener('click', () => {
   if (isListening) {
     stopListening();
   } else {
-    startListening();
+    startListening('from', micBtn);
+  }
+});
+
+micBtnFrom.addEventListener('click', () => {
+  if (isListening && activeMicBtn === micBtnFrom) {
+    stopListening();
+  } else {
+    startListening('from', micBtnFrom);
+  }
+});
+
+micBtnTo.addEventListener('click', () => {
+  if (isListening && activeMicBtn === micBtnTo) {
+    stopListening();
+  } else {
+    startListening('to', micBtnTo);
   }
 });
 
