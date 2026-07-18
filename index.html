@@ -318,7 +318,8 @@ const langNames = {
   'de-DE': 'Deutsch (DE)',
   'es-ES': 'Español (ES)',
   'fr-FR': 'Français (FR)',
-  'en-US': 'English (EN)'
+  'en-US': 'English (EN)',
+  'it-IT': 'Italiano (IT)'
 };
 // Mapping to 2-letter codes for translation API
 const langCode2 = {
@@ -326,7 +327,8 @@ const langCode2 = {
   'de-DE': 'de',
   'es-ES': 'es',
   'fr-FR': 'fr',
-  'en-US': 'en'
+  'en-US': 'en',
+  'it-IT': 'it'
 };
 
 const uiTranslations = {
@@ -459,6 +461,32 @@ const uiTranslations = {
     statusMicError: 'Could not start the microphone.',
     statusConvActive: 'Conversation Mode active — tap to speak in',
     statusNextTurn: 'Tap for the next reply'
+  },
+  'it': {
+    title: '🌍 Rukka Traduttore',
+    subtitle: 'Parla in una lingua, ascolta la traduzione — in tempo reale',
+    compatWarning: '⚠️ Il tuo browser non supporta il riconoscimento vocale. Usa Google Chrome (PC o Android).',
+    swapTitle: 'Scambia le lingue',
+    modeSingle: '🎯 Traduzione singola',
+    modeConversation: '💬 Modalità Conversazione',
+    placeholderOriginal: 'Tocca il microfono e parla...',
+    placeholderTranslated: 'La traduzione appare qui',
+    statusReady: 'Pronto',
+    convNote: 'In Modalità Conversazione, tocca il microfono corrispondente alla lingua che stai per parlare.',
+    replayBtn: "🔊 Ripeti audio",
+    clearBtn: '🗑️ Cancella',
+    speedLabel: 'Velocità della voce:',
+    footerText: 'Rukka Traduttore · Riconoscimento e sintesi vocale nativi del browser · Traduzione tramite Google Translate (con riserva MyMemory)',
+    labelOriginal: 'Originale',
+    labelTranslated: 'Traduzione',
+    statusListening: 'In ascolto in',
+    statusTranslating: 'Traduzione in corso...',
+    statusSpeaking: 'Riproduzione traduzione...',
+    statusDone: 'Completato',
+    statusError: 'Errore di traduzione. Riprova.',
+    statusMicError: 'Impossibile avviare il microfono.',
+    statusConvActive: 'Modalità Conversazione attiva — tocca per parlare in',
+    statusNextTurn: 'Tocca per la risposta successiva'
   }
 };
 
@@ -484,7 +512,8 @@ const allLanguages = [
   { code: 'de-DE', flag: '🇩🇪', name: 'Alemão (Alemanha)' },
   { code: 'es-ES', flag: '🇪🇸', name: 'Espanhol (Espanha)' },
   { code: 'fr-FR', flag: '🇫🇷', name: 'Francês (França)' },
-  { code: 'en-US', flag: '🇬🇧', name: 'Inglês' }
+  { code: 'en-US', flag: '🇬🇧', name: 'Inglês' },
+  { code: 'it-IT', flag: '🇮🇹', name: 'Italiano (Itália)' }
 ];
 
 function populateSelect(selectEl, excludeCode, selectedCode) {
@@ -761,5 +790,6 @@ if (window.speechSynthesis) {
   };
 }
 </script>
+
 </body>
 </html>
