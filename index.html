@@ -261,6 +261,11 @@
     <button class="small-btn" id="clearBtn">🗑️ Limpar</button>
   </div>
 
+  <div style="margin-top:14px;">
+    <div class="box-label">Velocidade da voz: <span id="rateValue">0.95</span>x</div>
+    <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.05" value="0.95" style="width:100%;">
+  </div>
+
 </div>
 
 <footer>Rukka Tradutor · Reconhecimento e síntese de voz nativos do navegador · Tradução via Google Translate (com reserva MyMemory)</footer>
@@ -395,11 +400,22 @@ async function translateText(text, fromCode, toCode) {
   }
 }
 
+let speechRate = 0.95;
+const rateSlider = document.getElementById('rateSlider');
+const rateValue = document.getElementById('rateValue');
+rateSlider.addEventListener('input', () => {
+  speechRate = parseFloat(rateSlider.value);
+  rateValue.textContent = speechRate.toFixed(2);
+});
+
 function speak(text, langTag) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = langTag;
+  utter.volume = 1;   // volume máximo (0 a 1)
+  utter.rate = speechRate;
+  utter.pitch = 1;
   const voices = window.speechSynthesis.getVoices();
   const match = voices.find(v => v.lang === langTag) ||
                 voices.find(v => v.lang.startsWith(langTag.split('-')[0]));
@@ -496,6 +512,7 @@ if (window.speechSynthesis) {
   };
 }
 </script>
- 
+
 </body>
 </html>
+
